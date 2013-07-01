@@ -1,0 +1,71 @@
+# =======================================
+# Took the time to convert from xml
+# Confusing number of files
+# Can always go back and rename later
+FOS\UserBundle\Entity\User:
+  
+    type:  mappedSuperclass
+    
+    fields:
+      
+        username:
+            type: string
+            
+        usernameCanonical:
+            column: username_canonical
+            type:   string
+            unique: true
+            
+        email:
+            type: string
+            
+        emailCanonical:
+            column: email_canonical
+            type:   string
+            unique: true
+            
+        enabled:
+            type: boolean
+            
+        salt:
+            type: string
+
+        password:
+            type: string
+            
+        lastLogin:
+            column:   last_login
+            type:     datetime
+            nullable: true
+            
+        locked:
+            type: boolean
+            
+        expired:
+            type: boolean
+            
+        expiresAt:
+            column: expires_at
+            type:   datetime
+            
+        confirmationToken:
+            column:   confirmation_token
+            type:     string
+            nullable: true
+            
+        passwordRequestedAt:
+            column:   password_requested_at
+            type:     datetime
+            nullable: true
+            
+        roles:
+            type: array
+            
+        credentialsExpired:
+            column: credentials_expired
+            type:   boolean
+            
+        credentialsExpireAt:
+            column:   credentials_expire_at
+            type:     datetime
+            nullable: true

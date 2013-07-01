@@ -1,0 +1,29 @@
+Cerad\Bundle\AccountBundle\Entity\AccountUser:
+    type:  entity
+    table: account_user
+    
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    
+    oneToMany:
+
+        identifiers:
+            targetEntity: AccountIdentifier
+            mappedBy:     account
+            cascade:      ['all']
+           
+    fields:
+    
+        name:
+            column:   name
+            type:     string
+           #length:   40
+            nullable: true
+            
+        personGuid:
+            column:   person_guid
+            type:     string
+            length:   32
+            nullable: true
