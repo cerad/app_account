@@ -45,8 +45,9 @@ FOS\UserBundle\Entity\User:
             type: boolean
             
         expiresAt:
-            column: expires_at
-            type:   datetime
+            column:   expires_at
+            type:     datetime
+            nullable: true
             
         confirmationToken:
             column:   confirmation_token

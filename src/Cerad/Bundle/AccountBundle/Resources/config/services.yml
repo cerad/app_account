@@ -1,7 +1,38 @@
 services:
   
-    cerad_account.registration.listener:
+    cerad_account.entity_manager:
+        alias: doctrine.orm.accounts_entity_manager
+  
+    cerad_account.registration_listener:
         class: Cerad\Bundle\AccountBundle\EventListener\RegistrationListener
         tags:
             - { name: kernel.event_subscriber }          
   
+    # ===========================================================
+    # Use fos naming schemes for now
+    cerad_account.user_provider:
+        class: Cerad\Bundle\AccountBundle\Security\AccountUserProvider
+        arguments: 
+            - '@fos_user.user_manager'
+        #   - '@cerad_person.manager'
+        
+    cerad_account.user_encoder:
+        class: Cerad\Bundle\AccountBundle\Security\AccountUserEncoder
+        arguments: [%cerad_account_master_password%]
+        
+    cerad_account.user_manager:
+        class: Cerad\Bundle\AccountBundle\Security\AccountUserManager
+        arguments:
+            - '@security.encoder_factory'
+            - '@fos_user.util.canonicalizer.default'
+            - '@fos_user.util.canonicalizer.default'
+            - '@cerad_account.entity_manager'
+            - 'Cerad\Bundle\AccountBundle\Entity\AccountUser'
+            - 'Cerad\Bundle\AccountBundle\Entity\AccountIdentifier'
+            
+    cerad_account.account_manager:
+        alias: cerad_account.user_manager
+            
+    fos_user.user_manager:
+        alias: cerad_account.user_manager
+   

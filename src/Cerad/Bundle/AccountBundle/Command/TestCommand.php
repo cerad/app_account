@@ -33,11 +33,24 @@ class TestCommand extends ContainerAwareCommand
         
         switch($testName)
         {
-            case 'basic': return $this->executeBasic();
-            case 'event': return $this->executeEvent($arg1);
+            case 'basic':    return $this->executeBasic();
+            case 'event':    return $this->executeEvent($arg1);
+            case 'register': return $this->executeRegister($arg1);
         }
         
         echo sprintf("Unknown test name: %s\n",$testName);
+    }
+    protected function executeRegister($arg1)
+    {
+        $manager = $this->getService('fos_user.user_manager');
+        $manip   = $this->getService('fos_user.util.user_manipulator');
+        
+        // username, password, email, active super_admin
+        $accountUser = $manip->create('ahundiak', 'password', 'ahundiak@gmail.com', true, true);
+        
+         
+        echo sprintf("Creating %s\n",$accountUser);
+        
     }
     protected function executeEvent($eventName)
     {

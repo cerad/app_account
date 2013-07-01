@@ -1,2 +1,19 @@
 services:
-  
+
+    # ===============================================
+    # Util stiff
+    fos_user.util.canonicalizer.default:
+        class: FOS\UserBundle\Util\Canonicalizer
+      
+    fos_user.util.user_manipulator:
+        class: FOS\UserBundle\Util\UserManipulator
+        arguments:
+            - '@fos_user.user_manager'
+
+    fos_user.util.token_generator.default:
+        class: FOS\UserBundle\Util\TokenGenerator
+        arguments:
+            - '@logger'
+    
+    # Defined in account bundle via alias
+    # fos_user.user_manager:
