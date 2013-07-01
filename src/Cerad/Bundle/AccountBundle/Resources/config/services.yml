@@ -1,2 +1,7 @@
 services:
   
+    cerad_account.registration.listener:
+        class: Cerad\Bundle\AccountBundle\EventListener\RegistrationListener
+        tags:
+            - { name: kernel.event_subscriber }          
+  
