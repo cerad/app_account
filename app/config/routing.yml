@@ -1,0 +1,3 @@
+cerad_account_routes:
+  resource: "@CeradAccountBundle/Resources/config/routing.yml"
+ #prefix:

@@ -1,0 +1,9 @@
+
+cerad_account_index:
+  path: /
+  defaults:  { _controller: CeradAccountBundle:Main:index }
+
+cerad_account_welcome:
+  path: /welcome
+  defaults:  { _controller: CeradAccountBundle:Main:welcome }
+
