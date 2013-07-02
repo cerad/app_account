@@ -2,14 +2,11 @@ Cerad\Bundle\AccountBundle\Entity\AccountIdentifier:
     type:  entity
     table: account_identifier
     
-    uniqueConstraints:
-       account_identifier_index:
-           columns: identifier
-    
     id:
         id:
-            type: integer
-            generator: { strategy: AUTO }
+            type:   string
+            length: 40
+            generator: { strategy: NONE }
             
     manyToOne:
       
@@ -18,23 +15,20 @@ Cerad\Bundle\AccountBundle\Entity\AccountIdentifier:
             inversedBy:   identifiers
             
     fields:
-    
-        providerName:
-            column:   provider_name
+        source:
             type:     string
-            length:   40
+            length:   20
             nullable: false
             
-        displayName:
-            column:   display_name
+        value:
             type:     string
-            length:   40
+            unique:   true
+            nullable: false
+            
+        name:
+            type:     string
+            length:   80
             nullable: true
-            
-        identifier:
-            column:   identifier
-            type:     string
-            nullable: false
             
         status:
             type:     string
@@ -44,3 +38,8 @@ Cerad\Bundle\AccountBundle\Entity\AccountIdentifier:
         profile:
             type:     array
             nullable: true
+
+        createdOn:
+            column: created_on
+            type:   datetime
+           

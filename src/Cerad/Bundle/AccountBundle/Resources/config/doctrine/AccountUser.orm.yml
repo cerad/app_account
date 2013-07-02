@@ -4,8 +4,9 @@ Cerad\Bundle\AccountBundle\Entity\AccountUser:
     
     id:
         id:
-            type: integer
-            generator: { strategy: AUTO }
+            type:   string
+            length: 40
+            generator: { strategy: NONE }
     
     oneToMany:
 
@@ -19,11 +20,19 @@ Cerad\Bundle\AccountBundle\Entity\AccountUser:
         name:
             column:   name
             type:     string
-           #length:   40
+            length:   80
             nullable: true
             
-        personGuid:
-            column:   person_guid
+        personId:
+            column:   person_id
             type:     string
-            length:   32
+            length:   40
             nullable: true
+            
+        personNo:
+            column:   person_no
+            type:     boolean
+           
+        createdOn:
+            column: created_on
+            type:   datetime

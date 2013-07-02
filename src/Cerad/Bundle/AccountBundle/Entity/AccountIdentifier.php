@@ -1,44 +1,57 @@
 <?php
 namespace Cerad\Bundle\AccountBundle\Entity;
 
+use Cerad\Bundle\AccountBundle\Functions\Guid;
+
 class AccountIdentifier
 {    
-    protected $id;
+    protected $id;      // Guid for now, contains addisitonal profile info
     
-    protected $providerName;
-    protected $displayName;
+    protected $value;
+    protected $account; // aka entiry
     
-    protected $identifier;
+    protected $name;    // aka user display name
+    protected $source;  // aka provider name
+    protected $profile;
    
-    protected $account;
-    
     protected $status = 'Active';
     
-    protected $profile;
+    protected $createdOn;
     
-    static public function create($providerName, $displayName, $identifier, $profileData = null)
+    // This needs to go away
+    static public function create($providerName, $displayName, $value, $profileData = null)
     {
         $item = new self();
         
         $item->setProviderName($providerName);
         $item->setDisplayName ($displayName);
-        $item->setIdentifier  ($identifier);
+        $item->setValue       ($value);
         $item->setProfile     ($profileData);
         
         return $item;
     }
-    public function setStatus      ($value) { $this->status       = $value; }
-    public function setAccount     ($value) { $this->account      = $value; }
-    public function setProfile     ($value) { $this->profile      = $value; }
-    public function setIdentifier  ($value) { $this->identifier   = $value; }
-    public function setDisplayName ($value) { $this->displayName  = $value; }
-    public function setProviderName($value) { $this->providerName = $value; }
+    public function setName     ($value) { $this->name      = $value; }
+    public function setValue    ($value) { $this->value     = $value; }
+    public function setSource   ($value) { $this->source    = $value; }
+    public function setStatus   ($value) { $this->status    = $value; }
+    public function setAccount  ($value) { $this->account   = $value; }
+    public function setProfile  ($value) { $this->profile   = $value; }
+    public function setCreatedOn($value) { $this->createdOn = $value; }
     
-    public function getStatus()       { return $this->status;       }
-    public function getAccount()      { return $this->account;      }
-    public function getProfile()      { return $this->profile;      }
-    public function getIdentifier()   { return $this->identifier;   }
-    public function getDisplayName()  { return $this->displayName;  }
-    public function getProviderName() { return $this->providerName; }
+    public function getName()      { return $this->name;      }
+    public function getValue()     { return $this->value;     }
+    public function getSource()    { return $this->source;    }
+    public function getStatus()    { return $this->status;    }
+    public function getAccount()   { return $this->account;   }
+    public function getProfile()   { return $this->profile;   }
+    public function getCreatedOn() { return $this->createdOn; }
+    
+    public function __construct()
+    {
+        $this->id = Guid::gen();
+        
+        $this->createdOn = new \DateTime();
+    }
+     
 }
 ?>
