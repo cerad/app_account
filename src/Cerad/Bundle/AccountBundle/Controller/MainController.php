@@ -29,7 +29,7 @@ class MainController extends Controller
     }
     public function homeAction(Request $request)
     {
-        if (!$this->isUser()) return $this-redirectToWelcome();
+        if (!$this->isUser()) return $this->redirectToWelcome();
         
         $tplData = array();
         return $this->render('@CeradAccount/home.html.twig', $tplData);        

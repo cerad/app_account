@@ -38,8 +38,8 @@ class AccountUserProvider extends BaseUserProvider
     {
         // Check AccountUser
         $user = $this->userManager->findUserByUsernameOrEmail($username);
-        
-        if (!$user) $user = $this->userManager->findUserByIdentifier($username);
+       
+        if (!$user) $user = $this->userManager->findUserByIdentifierValue($username);
         
         // Check for unique league id
         if (!$user && $this->personManager)

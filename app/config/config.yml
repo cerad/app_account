@@ -80,7 +80,7 @@ cerad_account:
     firewall_name: main
     
     user_class:            Cerad\Bundle\AccountBundle\Entity\AccountUser
-    user_identifier_class: Cerad\Bundle\AccountBundle\Entity\AccountIdentifier
+    user_class_identifier: Cerad\Bundle\AccountBundle\Entity\AccountIdentifier
       
     model_manager_name: accounts
     

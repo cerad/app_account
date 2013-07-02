@@ -30,15 +30,14 @@ class AccountUserManager extends BaseUserManager
         $this->accountUserClassName       = $accountUserClassName;
         $this->accountIdentifierClassName = $accountIdentifierClassName;
     }
-    public function findUserByIdentifier($identifier)
+    public function findUserByIdentifierValue($value)
     {
         $qb = $this->objectManager->createQueryBuilder();
         $qb->select('accountIdentifier, accountUser');
         $qb->from($this->accountIdentifierClassName, 'accountIdentifier');
-
         $qb->leftJoin('accountIdentifier.account','accountUser');
-        $qb->where   ('accountIdentifier.identifier = ?1');
-        $qb->setParameter(1,$identifier);
+        $qb->where   ('accountIdentifier.value = ?1');
+        $qb->setParameter(1,$value);
         
         $accountIdentifier = $qb->getQuery()->getOneOrNullResult();
         if ($accountIdentifier) return $accountIdentifier->getAccount();

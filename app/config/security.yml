@@ -26,7 +26,23 @@ security:
         main:
             pattern:   ^/
             anonymous: ~
+            
+            logout:
+                path:   cerad_account_logout
+                target: cerad_account_welcome
+                
+            form_login:
+                provider:            cerad_account_user_provider
+                login_path:          cerad_account_login
+                check_path:          cerad_account_login_check
+                default_target_path: cerad_account_home
 
+                username_parameter:  cerad_account_signin[username]
+                password_parameter:  cerad_account_signin[password]
+                csrf_parameter:      cerad_account_signin[_token]
+                csrf_provider:       form.csrf_provider
+                intention:           authenticate
+ 
     access_control:
         # - { path: ^/demo/secured/hello/admin/, roles: ROLE_ADMIN }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
