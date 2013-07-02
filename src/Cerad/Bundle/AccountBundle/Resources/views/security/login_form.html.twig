@@ -8,15 +8,15 @@
     {{ form_enctype(form) }}
  >
     <fieldset><legend><span>Account Sign In</span></legend>
-        {{ form_row(form.username) }}
-        {{ form_row(form.password) }}
+        {{ form_row(form.username,{ 'label': 'User Name or Email'}) }}
+        {{ form_row(form.password,{ 'label': 'Password'          }) }}
     </fieldset>
     <fieldset>
         {% if loginError is defined %}{% if loginError %}
-            <div style="color:red;">{{ loginError }}
+            <div style="color:red;">{{ loginError }}</div>
         {% endif %}{% endif %}
         <div class="cerad_common_form_controls controls">
-            <span><a href="{{ path('cerad_account_login') }}">Forgot Password or User Name or Just Need Help</a></span>
+            <span><a href="{{ path('cerad_account_login') }}">Forgot Password or User Name or Just Need Help?</a></span>
             <input type="submit" name="accountLogin" value="Log In" />
         </div>
     </fieldset>
