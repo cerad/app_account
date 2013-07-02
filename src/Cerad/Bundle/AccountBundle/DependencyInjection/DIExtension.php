@@ -18,7 +18,19 @@ class DIExtension extends Extension
             $config = array_merge($config, $subConfig);
         }
         // For now just store as a parameter
-        $container->setParameter('cerad_account_config',$config);
+        $container->setParameter('cerad_account.config',$config);
+        
+        $names = array
+        (   
+            'firewall_name',
+            'user_class','user_class_identifier',
+        );
+        foreach($names as $name)
+        {
+            $value = isset($config[$name]) ? $config[$name] : null;
+            
+            $container->setParameter('cerad_account.' . $name,$value); 
+        }
         
         // Continue
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));

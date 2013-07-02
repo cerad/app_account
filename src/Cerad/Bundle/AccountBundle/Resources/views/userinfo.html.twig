@@ -1,0 +1,16 @@
+<div id="cerad_layout_userinfo" class="cerad_layout_userinfo">
+    <p style="margin-top: 2px; color: black; ">
+      <span style="color: blue;">User: </span>
+      <span style="color: green;">       
+        {% if is_granted('ROLE_USER') %}
+            {{ app.user.name }} 
+            {% if app.user.person %}
+                {{ app.user.person.name }}
+            {% endif %}
+            <a href="{{ path('cerad_account_signout') }}">Sign Out</a>
+        {% else %}
+            Guest <a href="{{ path('cerad_account_signin') }}">Sign In</a>
+        {% endif %}          
+      </span>
+    </p>
+</div>

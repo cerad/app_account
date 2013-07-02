@@ -1,7 +1,7 @@
 services:
   
     cerad_account.entity_manager:
-        alias: doctrine.orm.accounts_entity_manager
+        alias: doctrine.orm.accounts_entity_manager # Need to tie this to cerad_account.model_manager_name
     
     # ===========================================================
     # Use fos naming schemes for now
@@ -13,7 +13,7 @@ services:
         
     cerad_account.user_encoder:
         class: Cerad\Bundle\AccountBundle\Security\AccountUserEncoder
-        arguments: [%cerad_account_master_password%]
+        arguments: [%cerad_account.master_password%]
         
     cerad_account.user_manager:
         class: Cerad\Bundle\AccountBundle\Security\AccountUserManager
@@ -22,8 +22,8 @@ services:
             - '@fos_user.util.canonicalizer.default'
             - '@fos_user.util.canonicalizer.default'
             - '@cerad_account.entity_manager'
-            - 'Cerad\Bundle\AccountBundle\Entity\AccountUser'
-            - 'Cerad\Bundle\AccountBundle\Entity\AccountIdentifier'
+            - '%cerad_account.user_class%'
+            - '%cerad_account.user_class_identifier%'
             
     cerad_account.account_manager:
         alias: cerad_account.user_manager
@@ -34,10 +34,28 @@ services:
     fos_user.user_manager:
         alias: cerad_account.user_manager
         
+    cerad_account.user_checker:
+        class: Symfony\Component\Security\Core\User\UserChecker
+        
+    cerad_account.login_manager:
+        class: Cerad\Bundle\AccountBundle\Security\LoginManager
+        arguments:
+            - '@security.context'
+            - '@cerad_account.user_checker'
+       
     # ==========================================================
     # My listeners
     cerad_account.registration_listener:
         class: Cerad\Bundle\AccountBundle\EventListener\RegistrationListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    # REGISTRATION_COMPLETED, REGISTRATION_CONFIRMED, RESETTING_RESET_COMPLETED
+    cerad_account.authentication_listener:
+        class: FOS\UserBundle\EventListener\AuthenticationListener
+        arguments:
+            - '@cerad_account.login_manager'
+            - '%cerad_account.firewall_name%'            
         tags:
             - { name: kernel.event_subscriber }          
     

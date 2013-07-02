@@ -11,6 +11,14 @@ cerad_account_home:
   path: /home
   defaults:  { _controller: CeradAccountBundle:Main:home }
   
+cerad_account_signin:
+  path: /signin
+  defaults:  { _controller: CeradAccountBundle:Main:signin }
+  
+cerad_account_signout:
+  path: /signout
+  defaults:  { _controller: CeradAccountBundle:Main:signout }
+  
 cerad_account_register:
   path: /register
   defaults:  { _controller: CeradAccountBundle:Registration:register }
