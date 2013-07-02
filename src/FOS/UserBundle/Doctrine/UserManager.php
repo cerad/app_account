@@ -41,6 +41,7 @@ class UserManager extends BaseUserManager
 
         $metadata = $om->getClassMetadata($class);
         $this->class = $metadata->getName();
+      //echo sprintf("%s %s",$class,$this->class); die(); // Always the same?
     }
 
     /**
