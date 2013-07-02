@@ -1,4 +1,13 @@
 {% extends '@CeradAccount/base.html.twig' %}
+
+{% block stylesheets %}
+
+{% stylesheets '@CeradAccountBundle/Resources/public/css/*' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+{% endstylesheets %}
+    
+{% endblock %}
+
 {% block body %}
 {% block content %}{% endblock %}
 {% endblock %}

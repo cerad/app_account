@@ -6,4 +6,12 @@ cerad_account_index:
 cerad_account_welcome:
   path: /welcome
   defaults:  { _controller: CeradAccountBundle:Main:welcome }
+  
+cerad_account_home:
+  path: /home
+  defaults:  { _controller: CeradAccountBundle:Main:home }
+  
+cerad_account_register:
+  path: /register
+  defaults:  { _controller: CeradAccountBundle:Registration:register }
 

@@ -6,6 +6,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use FOS\UserBundle\FOSUserEvents;
 
+use FOS\UserBundle\Event\FormEvent;
+use FOS\UserBundle\Event\UserEvent;
+
+use FOS\UserBundle\Event\FilterUserResponseEvent;
+
+/// FOS\UserBundle\Event\GetResponseUserEvent;
+
 class RegistrationListener implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
@@ -19,9 +26,17 @@ class RegistrationListener implements EventSubscriberInterface
             FOSUserEvents::REGISTRATION_CONFIRMED  => 'onRegistrationConfirmed',
         );
     }
-    public function onRegistrationInitialize(Event $event)
+    public function onRegistrationInitialize(UserEvent $event)
     {
         echo sprintf("### onRegistrationInitialize\n");
+    }    
+    public function onRegistrationSuccess(FormEvent $event)
+    {
+        echo sprintf("### onRegistrationSuccess\n");
+    }
+    public function onRegistrationCompleted(FilterUserResponseEvent $event)
+    {
+        echo sprintf("### onRegistrationCompleted\n");
     }
 }
 ?>

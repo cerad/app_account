@@ -12,7 +12,7 @@ framework:
         strict_requirements: ~
     form:            ~
     csrf_protection: ~
-    validation:      { enable_annotations: true }
+    validation:      { enable_annotations: false }
     templating:
         engines: ['twig']
         #assets_version: SomeVersionScheme
@@ -29,8 +29,8 @@ twig:
 # Assetic Configuration
 assetic:
     debug:          %kernel.debug%
-    use_controller: false
-    bundles:        [ ]
+    use_controller: true
+    bundles:        [ CeradAccountBundle ]
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
