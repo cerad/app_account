@@ -17,7 +17,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
           //new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             
-            new FOS\UserBundle\FOSUserBundle(),
+            new FOS\UserBundle\FOSUserBundle(), // Required for mappings
             
             new Cerad\Bundle\AccountBundle\CeradAccountBundle(),
         );
