@@ -1,15 +1,13 @@
 <?php
 namespace Cerad\Bundle\AccountBundle\Entity;
 
-use FOS\UserBundle\Entity\User as BaseUser;
+use FOS\UserBundle\Model\User as UserBase;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-//  Cerad\Bundle\PersonBundle\Entity\Person;
-
 use Cerad\Bundle\AccountBundle\Functions\Guid;
 
-class AccountUser extends BaseUser
+class AccountUser extends UserBase
 {
     protected $name;
     protected $person;      // Linked Object, can be null, no autocreate
