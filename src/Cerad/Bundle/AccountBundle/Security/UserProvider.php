@@ -1,7 +1,7 @@
 <?php
 namespace Cerad\Bundle\AccountBundle\Security;
 
-use FOS\UserBundle\Security\EmailUserProvider as BaseUserProvider;
+use FOS\UserBundle\Security\EmailUserProvider as UserProviderBase;
 
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface as SecurityUserInterface;
@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface as SecurityUserInterface;
  * Also allows signing in by membership id.
  * 
  */
-class AccountUserProvider extends BaseUserProvider
+class UserProvider extends UserProviderBase
 {
     public function __construct($userManager, $personManager = null)
     {
@@ -27,12 +27,12 @@ class AccountUserProvider extends BaseUserProvider
         if (!$this->personManager) return;
 
         // Null searches cause problems
-        $guid = $user->getPersonGuid();
-        if (!$guid) return;
+        $personId = $user->getPersonId();
+        if (!$personId) return;
         
-        $person = $this->personManager->find($guid);
+        $person = $this->personManager->find($personId);
         
-        $user->setPerson($person);        
+        $user->setPerson($person);
     }
     protected function findUser($username)
     {
@@ -44,10 +44,10 @@ class AccountUserProvider extends BaseUserProvider
         // Check for unique league id
         if (!$user && $this->personManager)
         {
-            $person = $this->personManager->loadPersonForLeagueMemId($username);
+            $person = $this->personManager->findByIdentifierValue($username);
             if ($person)
             {
-                $user = $this->userManager->findUserByPerson($person->getId());
+                $user = $this->userManager->findUserByPersonId($person->getId());
             }
           //else die('no league');
         }

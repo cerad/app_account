@@ -6,24 +6,24 @@ services:
     # ===========================================================
     # Use fos naming schemes for now
     cerad_account.user_provider:
-        class: Cerad\Bundle\AccountBundle\Security\AccountUserProvider
+        class: Cerad\Bundle\AccountBundle\Security\UserProvider
         arguments: 
             - '@fos_user.user_manager'
         #   - '@cerad_person.manager'
         
     cerad_account.user_encoder:
-        class: Cerad\Bundle\AccountBundle\Security\AccountUserEncoder
+        class: Cerad\Bundle\AccountBundle\Security\UserEncoder
         arguments: [%cerad_account.master_password%]
         
     cerad_account.user_manager:
-        class: Cerad\Bundle\AccountBundle\Security\AccountUserManager
+        class: Cerad\Bundle\AccountBundle\Security\UserManager
         arguments:
             - '@security.encoder_factory'
             - '@fos_user.util.canonicalizer.default'
             - '@fos_user.util.canonicalizer.default'
             - '@cerad_account.entity_manager'
             - '%cerad_account.user_class%'
-            - '%cerad_account.user_class_identifier%'
+            - '%cerad_account.user_identifier_class%'
             
     cerad_account.account_manager:
         alias: cerad_account.user_manager

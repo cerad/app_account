@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
 
-class DIExtension extends Extension
+class AccountExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -23,7 +23,8 @@ class DIExtension extends Extension
         $names = array
         (   
             'firewall_name',
-            'user_class','user_class_identifier',
+            'user_class',
+            'user_identifier_class',
         );
         foreach($names as $name)
         {

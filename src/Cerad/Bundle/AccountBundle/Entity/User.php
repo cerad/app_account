@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Cerad\Bundle\AccountBundle\Functions\Guid;
 
-class AccountUser extends UserBase
+class User extends UserBase
 {
     protected $name;
     protected $person;      // Linked Object, can be null, no autocreate
@@ -58,20 +58,9 @@ class AccountUser extends UserBase
         $this->identifiers[] = $identifier;
         $identifier->setAccount($this);
     }
-    public function newIdentifier() { return new AccountIdentifier(); }
+    public function newIdentifier() { return new UserIdentifier(); }
     
     public function getIdentifiers() { return $this->identifiers; }
-    
-    /* ======================================================
-     * This is a bit hokaay but in general one could expect that the
-     * user knows something about it's identifiers
-     * 
-     * The manager might be a better place for this
-     */
-    public function createIdentifier($providerName,$identifier,$profile = null)
-    {
-        return AccountIdentifier::create($providerName,$identifier,$profile);
-    }    
 }
 
 ?>

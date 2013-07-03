@@ -3,7 +3,7 @@ security:
     
     encoders:
         Symfony\Component\Security\Core\User\User: plaintext
-        Cerad\Bundle\AccountBundle\Entity\AccountUser: 
+        Cerad\Bundle\AccountBundle\Entity\User: 
             id: cerad_account.user_encoder
 
     role_hierarchy:
