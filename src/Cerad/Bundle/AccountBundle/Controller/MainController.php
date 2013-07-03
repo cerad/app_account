@@ -17,6 +17,7 @@ class MainController extends Controller
         $info = $authInfo->get($request);
         
         $item = array(
+            'error'    => $info['error'],
             'username' => $info['lastUsername'], // Probably not really necessary
             'password' => null,
         );

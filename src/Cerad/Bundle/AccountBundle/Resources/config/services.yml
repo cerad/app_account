@@ -130,7 +130,7 @@ services:
         arguments:
             - '@fos_user.user_manager'
 
-    fos_user.util.token_generator.default:
+    fos_user.util.token_generator:
         class: FOS\UserBundle\Util\TokenGenerator
         arguments:
             - '@logger'

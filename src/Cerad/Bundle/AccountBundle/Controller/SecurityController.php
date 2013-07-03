@@ -45,16 +45,15 @@ class SecurityController extends Controller
         $info = $authInfo->get($request);
         
         $item = array(
+            'error'    => $info['error'],
             'username' => $info['lastUsername'],
             'password' => null,
-            'error'    => $info['error'],
         );
         $loginForm         = $this->createForm($this->get('cerad_account.signin.formtype'),        $item);
         $passwordResetForm = $this->createForm($this->get('cerad_account.password_reset.formtype'),$item);
         
         // Render
         $tplData = array();
-        $tplData['loginError']        = $info['error'];
         $tplData['loginForm']         = $loginForm        ->createView();
         $tplData['passwordResetForm'] = $passwordResetForm->createView();
         return $this->render('@CeradAccount/Security/login.html.twig', $tplData);      

@@ -1,0 +1,14 @@
+{% extends '@CeradAccount/layout.html.twig' %}
+  
+{% block content %}
+<h5>Check Your Email</h5>
+<p>
+    An email has been sent to: {{ email }}
+</p><p>
+    Click on the link in the email to reset your password.
+</p><p>
+    If the email does not arrive a few seconds then <strong>Check Your SPAM Folder.</strong>
+</p><p>
+    Username: {{ username }} Token: {{ token }}
+</p>
+{% endblock %}

@@ -16,7 +16,7 @@ class EmailUserProvider extends UserProvider
     /**
      * {@inheritDoc}
      */
-    protected function findUser($username)
+    public function findUser($username)
     {
         return $this->userManager->findUserByUsernameOrEmail($username);
     }

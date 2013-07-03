@@ -12,9 +12,9 @@
         {{ form_row(form.password,{ 'label': 'Password'          }) }}
     </fieldset>
     <fieldset>
-        {% if loginError is defined %}{% if loginError %}
-            <div style="color:red;">{{ loginError }}</div>
-        {% endif %}{% endif %}
+        {% if form.vars.data.error %}
+            <div style="color:red;">{{ form.vars.data.error }}</div>
+        {% endif %}
         <div class="cerad_common_form_controls controls">
             <span><a href="{{ path('cerad_account_login') }}">Forgot Password or User Name or Just Need Help?</a></span>
             <input type="submit" name="accountLogin" value="Log In" />

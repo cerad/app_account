@@ -3,7 +3,7 @@ namespace Cerad\Bundle\AccountBundle\Security;
 
 use FOS\UserBundle\Security\EmailUserProvider as UserProviderBase;
 
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+//  Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface as SecurityUserInterface;
 
 /* ===============================================
@@ -34,7 +34,7 @@ class UserProvider extends UserProviderBase
         
         $user->setPerson($person);
     }
-    protected function findUser($username)
+    public function findUser($username)
     {
         // Check AccountUser
         $user = $this->userManager->findUserByUsernameOrEmail($username);
@@ -49,11 +49,8 @@ class UserProvider extends UserProviderBase
             {
                 $user = $this->userManager->findUserByPersonId($person->getId());
             }
-          //else die('no league');
         }
-        if (!$user) {
-            throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
-        }
+        if (!$user) return null;
  
         $this->addPersonToUser($user);
         
