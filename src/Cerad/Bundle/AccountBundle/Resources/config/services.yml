@@ -40,6 +40,9 @@ services:
             - '@security.context'
             - '@cerad_account.user_checker'
        
+    cerad_account.authentication_information:
+        class: Cerad\Bundle\AccountBundle\Security\AuthenticationInformation
+      
     # ==========================================================
     # My listeners
     cerad_account.registration_listener:

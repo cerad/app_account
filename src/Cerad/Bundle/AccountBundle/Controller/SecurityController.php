@@ -41,11 +41,13 @@ class SecurityController extends Controller
     public function loginAction(Request $request)
     {
         // Majic to get any previous errors
-        $info = $this->getSecurityAuthenticationInfomation($request);
+        $authInfo = $this->get('cerad_account.authentication_information');
+        $info = $authInfo->get($request);
         
         $item = array(
             'username' => $info['lastUsername'],
             'password' => null,
+            'error'    => $info['error'],
         );
         $loginForm         = $this->createForm($this->get('cerad_account.signin.formtype'),        $item);
         $passwordResetForm = $this->createForm($this->get('cerad_account.password_reset.formtype'),$item);
@@ -55,7 +57,7 @@ class SecurityController extends Controller
         $tplData['loginError']        = $info['error'];
         $tplData['loginForm']         = $loginForm        ->createView();
         $tplData['passwordResetForm'] = $passwordResetForm->createView();
-        return $this->render('@CeradAccount/security/login.html.twig', $tplData);      
+        return $this->render('@CeradAccount/Security/login.html.twig', $tplData);      
     }
     /* ================================================
      * In case the firewall is not configured correctly

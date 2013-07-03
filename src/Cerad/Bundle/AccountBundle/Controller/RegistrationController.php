@@ -54,7 +54,7 @@ class RegistrationController extends Controller
        // Render
         $tplData = array();
         $tplData['form'] = $form->createView();
-        return $this->render('@CeradAccount/registration/register/index.html.twig', $tplData);        
+        return $this->render('@CeradAccount/Registration/Register/index.html.twig', $tplData);        
     }
 }
 ?>

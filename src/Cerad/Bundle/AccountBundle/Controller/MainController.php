@@ -12,7 +12,18 @@ class MainController extends Controller
     }
     public function welcomeAction(Request $request)
     {
+        // Like to have login info here
+        $authInfo = $this->get('cerad_account.authentication_information');
+        $info = $authInfo->get($request);
+        
+        $item = array(
+            'username' => $info['lastUsername'], // Probably not really necessary
+            'password' => null,
+        );
+        $loginForm = $this->createForm($this->get('cerad_account.signin.formtype'),        $item);
+        
         $tplData = array();
+        $tplData['loginForm'] = $loginForm->createView();
         return $this->render('@CeradAccount/welcome.html.twig', $tplData);        
     }
     protected function isAdmin()
