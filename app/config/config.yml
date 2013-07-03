@@ -46,6 +46,7 @@ swiftmailer:
     username:  %mailer_user%
     password:  %mailer_password%
     spool:     { type: memory }
+    disable_delivery: %mailer_disable%
     
 # As an example
 # FOSUser Configuration

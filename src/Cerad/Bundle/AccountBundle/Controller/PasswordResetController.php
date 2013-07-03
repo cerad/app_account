@@ -46,23 +46,25 @@ class PasswordResetController extends Controller
                 // Should check to see how long since last request
                 
                 // Set the confirmation token
-                if (!$user->getConfirmationToken()) 
+                if (!$user->getConfirmationToken() || 1) 
                 {
                     $tokenGenerator = $this->container->get('fos_user.util.token_generator');
                     $user->setConfirmationToken($tokenGenerator->generateToken());
+                    $user->setConfirmationToken(mt_rand(1000,9999));
                 }
                 // Tuck away email address for check email page
                 $sessionData = array
                 (
                     'username' => $username,
                     'email'    => $this->getObfuscatedEmail($user),
-                    'token'    => mt_rand(1000,9999),
+                    'token'    => $user->getConfirmationToken(),
                 );
                 $request->getSession()->set(static::SESSION_DATA,$sessionData);
                 
                 // Send the actual email
                 // $this->container->get('fos_user.mailer')->sendResettingEmailMessage($user);
-        
+                $this->sendEmail($user);
+                
                 // Persist the updated user
                 $user->setPasswordRequestedAt(new \DateTime());
                 $this->container->get('cerad_account.user_manager')->updateUser($user);
@@ -76,51 +78,73 @@ class PasswordResetController extends Controller
         $tplData['passwordResetForm' ] = $form->createView();
         return $this->render('@CeradAccount/Password/Reset/request.html.twig', $tplData);
     }
+    protected function sendEmail($user)
+    {
+        $fromName =  'Zayso Password Reset';
+        $fromEmail = 'noreply@zayso.org';
+        
+        $adminName =  'Art Hundiak';
+        $adminEmail = 'ahundiak@gmail.com';
+       
+        $userName  = $user->getName();
+        $userEmail = $user->getEmail();
+        
+        $tplData = array();
+        $tplData['user']   = $user;
+        $tplData['prefix'] = 'Zayso';
+        
+        $body    = $this->renderView('@CeradAccount/Password/Reset/email_body.html.twig',  $tplData);
+        $subject = $this->renderView('@CeradAccount/Password/Reset/email_subject.txt.twig',$tplData);
+        
+        
+         // This goes to the assignor
+        $message = \Swift_Message::newInstance();
+        $message->setSubject($subject);
+        $message->setBody($body);
+        $message->setFrom(array($fromEmail  => $fromName ));
+        $message->setBcc (array($adminEmail => $adminName));
+        $message->setTo  (array($userEmail  => $userName ));
+
+        $this->get('mailer')->send($message);
+       
+    }
     public function checkEmailAction(Request $request)
     {
-        $session = $request->getSession();
+        $session     = $request->getSession();
         $sessionData = $session->get(static::SESSION_DATA);
+        $sessionData['error'] = null;
         
-        $session->remove(static::SESSION_DATA);
+      //$session->remove(static::SESSION_DATA);
 
         if (!$sessionData) 
         {
             return $this->redirect($this->generateUrl('cerad_account_password_reset_request'));
         }
+        $item = array('token' => null);
+        $form = $this->createForm($this->get('cerad_account.token.formtype'),$item);
+        $form->handleRequest($request);
 
+        if ($form->isValid()) 
+        { 
+            $item = $form->getData();
+            if ($item['token'] != $sessionData['token']) $sessionData['error'] = 'Invalid token entered, try again.';
+            else
+            {
+                $sessionData['error'] = 'Tokens match';
+                
+                // So how exactly do we implement a password reset?  A session flag perhaps?
+                
+                //$session->remove(static::SESSION_DATA);
+            }
+            
+        }
         $tplData = array();
-        $tplData['email']    = $sessionData['email'];
-        $tplData['token']    = $sessionData['token'];
-        $tplData['username'] = $sessionData['username'];
+        $tplData['error']     = $sessionData['error'];
+        $tplData['email']     = $sessionData['email'];
+        $tplData['token']     = $sessionData['token'];
+        $tplData['username']  = $sessionData['username'];
+        $tplData['tokenForm'] = $form->createView();
         return $this->render('@CeradAccount/Password/Reset/check_email.html.twig', $tplData);
-    }
-    public function sendEmailAction(Request $request)
-    {
-        $username = $request->request->get('username');
-die($username);
-        $user = $this->container->get('fos_user.user_manager')->findUserByUsernameOrEmail($username);
-
-        if (null === $user) {
-            return $this->container->get('templating')->renderResponse('FOSUserBundle:Resetting:request.html.'.$this->getEngine(), array('invalid_username' => $username));
-        }
-
-        if ($user->isPasswordRequestNonExpired($this->container->getParameter('fos_user.resetting.token_ttl'))) {
-            return $this->container->get('templating')->renderResponse('FOSUserBundle:Resetting:passwordAlreadyRequested.html.'.$this->getEngine());
-        }
-
-        if (null === $user->getConfirmationToken()) {
-            /** @var $tokenGenerator \FOS\UserBundle\Util\TokenGeneratorInterface */
-            $tokenGenerator = $this->container->get('fos_user.util.token_generator');
-            $user->setConfirmationToken($tokenGenerator->generateToken());
-        }
-
-        $this->container->get('session')->set(static::SESSION_EMAIL, $this->getObfuscatedEmail($user));
-        $this->container->get('fos_user.mailer')->sendResettingEmailMessage($user);
-        
-        $user->setPasswordRequestedAt(new \DateTime());
-        $this->container->get('fos_user.user_manager')->updateUser($user);
-
-        return new RedirectResponse($this->container->get('router')->generate('fos_user_resetting_check_email'));
     }
     /**
      * Get the truncated email displayed when requesting the resetting.

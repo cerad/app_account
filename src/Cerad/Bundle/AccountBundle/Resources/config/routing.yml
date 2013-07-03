@@ -34,15 +34,15 @@ cerad_account_password_reset_request:
   defaults:  { _controller: CeradAccountBundle:PasswordReset:request }
   methods:  [GET, POST]
   
+cerad_account_password_reset_check_email:
+  path:      /password/reset/check-email
+  defaults:  { _controller: CeradAccountBundle:PasswordReset:checkEmail }
+  methods:   [GET, POST]
+  
 cerad_account_password_reset_send_email:
   path:      /password/reset/send-email
   defaults:  { _controller: CeradAccountBundle:PasswordReset:sendEmail }
   methods:   [POST]
-  
-cerad_account_password_reset_check_email:
-  path:      /password/reset/check-email
-  defaults:  { _controller: CeradAccountBundle:PasswordReset:checkEmail }
-  methods:   [GET]
 
 cerad_account_password_reset_reset:
   path:       /password/reset/reset/{token}
