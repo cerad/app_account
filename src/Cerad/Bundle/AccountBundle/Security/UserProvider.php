@@ -1,7 +1,7 @@
 <?php
 namespace Cerad\Bundle\AccountBundle\Security;
 
-use FOS\UserBundle\Security\EmailUserProvider as UserProviderBase;
+use FOS\UserBundle\Security\UserProvider as UserProviderBase;
 
 //  Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface as SecurityUserInterface;
@@ -34,7 +34,17 @@ class UserProvider extends UserProviderBase
         
         $user->setPerson($person);
     }
-    public function findUser($username)
+    /* ========================================================================
+     * Note that the loadUserByUsername is defined Security/UserProvider
+     * It calls findUser and throws an username not foud exception
+     * 
+     * For some reason, findUser was made protected.  Kind of handy to have.
+     * Hence by own fundUserByUsername
+     * 
+     * Maybe this should be in the user manager?
+     */
+    public function findUserByUsername($username) { return $this->findUser($username); }
+    protected function findUser($username)
     {
         // Check AccountUser
         $user = $this->userManager->findUserByUsernameOrEmail($username);

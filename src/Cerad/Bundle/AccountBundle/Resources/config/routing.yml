@@ -29,25 +29,27 @@ cerad_account_register:
   
 # ===========================================
 # Password resetting stuff
+# I only need two actions
 cerad_account_password_reset_request:
   path: /password/reset/request
   defaults:  { _controller: CeradAccountBundle:PasswordReset:request }
   methods:  [GET, POST]
   
-cerad_account_password_reset_check_email:
+cerad_account_password_reset_confirm:
+  path:       /password/reset/confirm/{token}
+  defaults:  { _controller: CeradAccountBundle:PasswordReset:confirm, token: null }
+  methods:  [GET, POST]
+  
+cerad_account_password_reset_check_email_not_used:
   path:      /password/reset/check-email
   defaults:  { _controller: CeradAccountBundle:PasswordReset:checkEmail }
   methods:   [GET, POST]
   
-cerad_account_password_reset_send_email:
+cerad_account_password_reset_send_email_not_used:
   path:      /password/reset/send-email
   defaults:  { _controller: CeradAccountBundle:PasswordReset:sendEmail }
   methods:   [POST]
 
-cerad_account_password_reset_reset:
-  path:       /password/reset/reset/{token}
-  defaults:  { _controller: CeradAccountBundle:PasswordReset:reset }
-  methods:  [GET POST]
   
 cerad_account_password_change:
   path:      /password/change
@@ -56,6 +58,7 @@ cerad_account_password_change:
 
 # ===========================================
 # Password resetting stuff
+# Copied from FOS for reference
 fos_user_resetting_request:
   path: /resetting/request
   defaults:  { _controller: CeradAccountBundle:Resetting:request }

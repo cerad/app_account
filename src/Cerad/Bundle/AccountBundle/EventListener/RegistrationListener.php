@@ -28,15 +28,15 @@ class RegistrationListener implements EventSubscriberInterface
     }
     public function onRegistrationInitialize(UserEvent $event)
     {
-        echo sprintf("### onRegistrationInitialize\n");
+      //echo sprintf("### onRegistrationInitialize\n");
     }    
     public function onRegistrationSuccess(FormEvent $event)
     {
-        echo sprintf("### onRegistrationSuccess\n");
+      //echo sprintf("### onRegistrationSuccess\n");
     }
     public function onRegistrationCompleted(FilterUserResponseEvent $event)
     {
-        echo sprintf("### onRegistrationCompleted\n");
+      //echo sprintf("### onRegistrationCompleted\n");
     }
 }
 ?>

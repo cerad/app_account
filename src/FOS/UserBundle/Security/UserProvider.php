@@ -88,7 +88,7 @@ class UserProvider implements UserProviderInterface
      * 
      * Made this public so we can check for a user without worrying about execeptions
      */
-    public function findUser($username)
+    protected function findUser($username)
     {
         return $this->userManager->findUserByUsername($username);
     }

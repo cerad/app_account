@@ -2,10 +2,13 @@
 namespace Cerad\Bundle\AccountBundle\Controller;
 
 use FOS\UserBundle\FOSUserEvents;
-use FOS\UserBundle\Event\FormEvent;
-use FOS\UserBundle\Event\GetResponseUserEvent;
-use FOS\UserBundle\Event\UserEvent;
+
+// FOS\UserBundle\Event\FormEvent;
+// FOS\UserBundle\Event\GetResponseUserEvent;
+// FOS\UserBundle\Event\UserEvent;
+
 use FOS\UserBundle\Event\FilterUserResponseEvent;
+
 use FOS\UserBundle\Model\UserInterface;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +38,7 @@ class PasswordResetController extends Controller
             $username = $item['username'];
             
             $userProvider = $this->get('cerad_account.user_provider');
-            $user = $userProvider->findUser($username);
+            $user = $userProvider->findUserByUsername($username);
             if (!$user)
             {
                 // TODO: add error to form
@@ -50,26 +53,27 @@ class PasswordResetController extends Controller
                 {
                     $tokenGenerator = $this->container->get('fos_user.util.token_generator');
                     $user->setConfirmationToken($tokenGenerator->generateToken());
-                    $user->setConfirmationToken(mt_rand(1000,9999));
                 }
+                // My short tokens
+                $token = mt_rand(1000,9999);
+                
                 // Tuck away email address for check email page
                 $sessionData = array
                 (
-                    'username' => $username,
-                    'email'    => $this->getObfuscatedEmail($user),
-                    'token'    => $user->getConfirmationToken(),
+                    'id'    => $user->getId(),
+                    'token' => $token,
+                    'tries' => 0,
                 );
                 $request->getSession()->set(static::SESSION_DATA,$sessionData);
                 
                 // Send the actual email
-                // $this->container->get('fos_user.mailer')->sendResettingEmailMessage($user);
-                $this->sendEmail($user);
+                $this->sendEmail($user,$token);
                 
                 // Persist the updated user
                 $user->setPasswordRequestedAt(new \DateTime());
                 $this->container->get('cerad_account.user_manager')->updateUser($user);
 
-                return $this->redirect($this->generateUrl('cerad_account_password_reset_check_email'));
+                return $this->redirect($this->generateUrl('cerad_account_password_reset_confirm'));
             }
         }
         // Render
@@ -78,7 +82,11 @@ class PasswordResetController extends Controller
         $tplData['passwordResetForm' ] = $form->createView();
         return $this->render('@CeradAccount/Password/Reset/request.html.twig', $tplData);
     }
-    protected function sendEmail($user)
+    /* =============================================================
+     * Not sure it really makes sense to abstract this
+     * Lots of things to inject
+     */
+    protected function sendEmail(UserInterface $user,$token)
     {
         $fromName =  'Zayso Password Reset';
         $fromEmail = 'noreply@zayso.org';
@@ -91,12 +99,12 @@ class PasswordResetController extends Controller
         
         $tplData = array();
         $tplData['user']   = $user;
+        $tplData['token']  = $token;
         $tplData['prefix'] = 'Zayso';
         
         $body    = $this->renderView('@CeradAccount/Password/Reset/email_body.html.twig',  $tplData);
         $subject = $this->renderView('@CeradAccount/Password/Reset/email_subject.txt.twig',$tplData);
-        
-        
+
          // This goes to the assignor
         $message = \Swift_Message::newInstance();
         $message->setSubject($subject);
@@ -108,54 +116,7 @@ class PasswordResetController extends Controller
         $this->get('mailer')->send($message);
        
     }
-    public function checkEmailAction(Request $request)
-    {
-        $session     = $request->getSession();
-        $sessionData = $session->get(static::SESSION_DATA);
-        $sessionData['error'] = null;
-        
-      //$session->remove(static::SESSION_DATA);
-
-        if (!$sessionData) 
-        {
-            return $this->redirect($this->generateUrl('cerad_account_password_reset_request'));
-        }
-        $item = array('token' => null);
-        $form = $this->createForm($this->get('cerad_account.token.formtype'),$item);
-        $form->handleRequest($request);
-
-        if ($form->isValid()) 
-        { 
-            $item = $form->getData();
-            if ($item['token'] != $sessionData['token']) $sessionData['error'] = 'Invalid token entered, try again.';
-            else
-            {
-                $sessionData['error'] = 'Tokens match';
-                
-                // So how exactly do we implement a password reset?  A session flag perhaps?
-                
-                //$session->remove(static::SESSION_DATA);
-            }
-            
-        }
-        $tplData = array();
-        $tplData['error']     = $sessionData['error'];
-        $tplData['email']     = $sessionData['email'];
-        $tplData['token']     = $sessionData['token'];
-        $tplData['username']  = $sessionData['username'];
-        $tplData['tokenForm'] = $form->createView();
-        return $this->render('@CeradAccount/Password/Reset/check_email.html.twig', $tplData);
-    }
-    /**
-     * Get the truncated email displayed when requesting the resetting.
-     *
-     * The default implementation only keeps the part following @ in the address.
-     *
-     * @param \FOS\UserBundle\Model\UserInterface $user
-     *
-     * @return string
-     */
-    protected function getObfuscatedEmail($user)
+    protected function getObfuscatedEmail(UserInterface $user)
     {
         $email = $user->getEmail();
         if (false !== $pos = strpos($email, '@')) {
@@ -164,6 +125,142 @@ class PasswordResetController extends Controller
 
         return $email;
     }
-    
+    /* =============================================================
+     * Presents the confirmation token form and new password
+     * Then updates everything if all is well
+     */
+    public function confirmAction(Request $request, $tokenx = null)
+    {
+        // The original very long token
+        if ($tokenx) return $this->tokenAction($request,$tokenx);
+        
+        $error = null;
+        
+        $session     = $request->getSession();
+        $sessionData = $session->get(static::SESSION_DATA);
+        
+        $tries = isset($sessionData['tries']) ? $sessionData['tries'] : null;
+        $token = isset($sessionData['token']) ? $sessionData['token'] : null;
+        
+        // Load up the user which also checls the session data
+        $userId      = isset($sessionData['id']) ? $sessionData['id'] : null;
+        $userManager = $this->get('cerad_account.user_manager');
+        $user        = $userManager->findUserBy(array('id' => $userId));
+        
+        if ((null === $user) || (null === $token) || (3 < $tries )) 
+        {
+            $session->remove(static::SESSION_DATA);
+            return $this->redirect($this->generateUrl('cerad_account_welcome'));
+        }
+        // Form stuff
+        $item = array(
+            'token'    => null,
+            'password' => null,
+        );
+        $form = $this->createFormBuilder($item)
+            ->add('token',    'cerad_account_token')
+            ->add('password', 'cerad_account_password')
+          //->add('save',     'submit')
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) 
+        { 
+            $item = $form->getData();
+            if ($token == $item['token'])
+            {
+                $password = $item['password'];
+                $user->setPlainPassword($password);
+                $user->setConfirmationToken  (null);
+                $user->setPasswordRequestedAt(null);
+                $userManager->updateUser($user);
+                
+                $session->remove(static::SESSION_DATA);
+                
+                // Could goto to confirmationed screen
+                $response = $this->redirect($this->generateUrl('cerad_account_home'));
+                
+                // Sign the user in
+                $dispatcher = $this->get('event_dispatcher');
+                $dispatcher->dispatch(FOSUserEvents::RESETTING_RESET_COMPLETED, new FilterUserResponseEvent($user, $request, $response));
+                
+                return $response;
+            }
+            // Maybe should generate a new token or at least add a counter
+            $tries++;
+            $sessionData['tries'] = $tries;
+            $session->set(static::SESSION_DATA,$sessionData);
+            
+            $error = 'Invalid confirmation number entered, try again.';
+            
+        }
+        $tplData = array();
+        $tplData['form']  = $form->createView();
+        $tplData['user']  = $user;
+        $tplData['email'] = $this->getObfuscatedEmail($user);
+        
+        $tplData['error'] = $error;
+        $tplData['tries'] = $tries;
+        $tplData['token'] = $token;
+        
+        return $this->render('@CeradAccount/Password/Reset/confirm.html.twig', $tplData);
+    } 
+    /* =============================================================
+     * This process the older style in which a long token is passed
+     * as part of the reset process
+     * TODO: Make the implementation
+     */
+    public function tokenAction(Request $request, $token = null)
+    {
+        $session     = $request->getSession();
+        $sessionData = $session->get(static::SESSION_DATA);
+        $confirmed   = false;
+        $user        = null;
+        if (is_array($sessionData))
+        {
+            $confirmed   = $sessionData['confirmed'];
+            $userManager = $this->get('cerad_account.user_manager');
+            $user        = $userManager->findUserBy(array('id' => $sessionData['id']));
+        }
+        if (!$confirmed || !$user)
+        {
+            // Should not get here
+            $session->remove(static::SESSION_DATA);
+            return $this->redirect($this->generateUrl('cerad_account_welcome'));
+        }
+        // The form
+        $password = null;
+        $form = $this->createForm($this->get('cerad_account.password.formtype'),$password);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) 
+        { 
+            $password = $form->getData();
+            // Need this for now
+            if ($password)
+            {
+                $user->setPlainPassword($password);
+                $user->setConfirmationToken  (null);
+                $user->setPasswordRequestedAt(null);
+                $userManager->updateUser($user);
+                
+                $session->remove(static::SESSION_DATA);
+                
+                $response = $this->redirect($this->generateUrl('cerad_account_home'));
+                
+                // Sign the user in
+                $dispatcher = $this->get('event_dispatcher');
+                $dispatcher->dispatch(FOSUserEvents::RESETTING_RESET_COMPLETED, new FilterUserResponseEvent($user, $request, $response));
+                
+                return $response;
+            }
+        }
+        $tplData = array();
+        $tplData['user'] = $user;
+        $tplData['passwordChangeForm'] = $form->createView();
+        return $this->render('@CeradAccount/Password/Reset/change.html.twig', $tplData);
+        
+    }
 }
 ?>
