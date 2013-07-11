@@ -42,6 +42,37 @@ class UserIdentifier
         
         $this->createdOn = new \DateTime();
     }
-     
+    public function loadFromArray($item)
+    {
+        // Keep it simple for now
+        $props = array
+        (
+            'id'      => 'id',
+            'source'  => 'source',
+            'value'   => 'value',
+            'name'    => 'name',
+            'status'  => 'status',
+            'profile' => 'profile',
+        );
+        foreach($props as $key => $value)
+        {
+            $this->$key = $item[$value];
+        }
+        // Handle dates
+        $props = array
+        (
+            'createdOn' => 'created_on',
+        );
+        foreach($props as $key => $value)
+        {
+            $date = $item[$value];
+            if ($date)
+            {
+                $date = new \DateTime($date);
+                $this->$key = $date;
+            }
+        }
+        return $this;
+     }     
 }
 ?>
